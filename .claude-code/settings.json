@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "afterFileEdit": {
+      "pattern": "*.ts",
+      "command": "echo 'TypeScript file edited'"
+    },
+    "beforeCommand": {
+      "commands": ["npm install", "npm run dev"],
+      "script": "echo 'Starting development environment...'"
+    },
+    "onFileCreate": {
+      "pattern": "*.tsx",
+      "command": "echo 'New React component created'"
+    }
+  },
+  "tools": {
+    "enabled": ["Bash", "Edit", "Write", "Read"],
+    "disabled": []
+  },
+  "lint": {
+    "onSave": true,
+    "commands": {
+      "backend": "cd dojo-backend && npm run lint",
+      "frontend": "cd dojo-platform && npm run lint"
+    }
+  }
+}
