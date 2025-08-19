@@ -15,15 +15,22 @@ interface OrganizationAttributes {
   phone?: string;
   email: string;
   website?: string;
-  subscription: 'free' | 'basic' | 'premium' | 'enterprise';
+  businessType?: string;
+  martialArtTypes?: string[];
+  numberOfSchools?: number;
+  estimatedStudents?: number;
+  subscription: 'trial' | 'free' | 'basic' | 'premium' | 'enterprise';
+  subscriptionStatus: 'active' | 'expired' | 'cancelled' | 'pending';
   subscriptionExpiry?: Date;
+  trialStartDate?: Date;
+  trialEndDate?: Date;
   isActive: boolean;
   settings?: object;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface OrganizationCreationAttributes extends Optional<OrganizationAttributes, 'id' | 'isActive' | 'subscription'> {}
+interface OrganizationCreationAttributes extends Optional<OrganizationAttributes, 'id' | 'isActive' | 'subscription' | 'subscriptionStatus'> {}
 
 class Organization extends Model<OrganizationAttributes, OrganizationCreationAttributes> implements OrganizationAttributes {
   public id!: string;
@@ -38,8 +45,15 @@ class Organization extends Model<OrganizationAttributes, OrganizationCreationAtt
   public phone?: string;
   public email!: string;
   public website?: string;
-  public subscription!: 'free' | 'basic' | 'premium' | 'enterprise';
+  public businessType?: string;
+  public martialArtTypes?: string[];
+  public numberOfSchools?: number;
+  public estimatedStudents?: number;
+  public subscription!: 'trial' | 'free' | 'basic' | 'premium' | 'enterprise';
+  public subscriptionStatus!: 'active' | 'expired' | 'cancelled' | 'pending';
   public subscriptionExpiry?: Date;
+  public trialStartDate?: Date;
+  public trialEndDate?: Date;
   public isActive!: boolean;
   public settings?: object;
   public readonly createdAt!: Date;
@@ -77,11 +91,24 @@ Organization.init(
       },
     },
     website: DataTypes.STRING,
+    businessType: DataTypes.STRING,
+    martialArtTypes: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+    },
+    numberOfSchools: DataTypes.INTEGER,
+    estimatedStudents: DataTypes.INTEGER,
     subscription: {
-      type: DataTypes.ENUM('free', 'basic', 'premium', 'enterprise'),
-      defaultValue: 'free',
+      type: DataTypes.ENUM('trial', 'free', 'basic', 'premium', 'enterprise'),
+      defaultValue: 'trial',
+    },
+    subscriptionStatus: {
+      type: DataTypes.ENUM('active', 'expired', 'cancelled', 'pending'),
+      defaultValue: 'active',
     },
     subscriptionExpiry: DataTypes.DATE,
+    trialStartDate: DataTypes.DATE,
+    trialEndDate: DataTypes.DATE,
     isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,

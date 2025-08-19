@@ -3,10 +3,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+
+// Load environment variables FIRST
+dotenv.config();
+
+// Now import modules that depend on environment variables
 import { sequelize } from './models';
 import authRoutes from './routes/auth';
-
-dotenv.config();
+import registrationRoutes from './routes/registration.routes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +27,7 @@ app.use(morgan('dev'));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/registration', registrationRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {
