@@ -186,9 +186,9 @@ export default function RegisterPage() {
         throw new Error(data.message || 'Registration failed');
       }
 
-      // Store token in localStorage
+      // Store token in localStorage and cookie
       localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data.user));
+      document.cookie = `token=${data.data.token}; path=/; max-age=${60 * 60 * 24 * 30}`;
       
       // Redirect to dashboard
       router.push('/dashboard');

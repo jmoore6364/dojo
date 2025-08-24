@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
@@ -11,16 +10,45 @@ dotenv.config();
 import { sequelize } from './models';
 import authRoutes from './routes/auth';
 import registrationRoutes from './routes/registration.routes';
+import schoolsRoutes from './routes/schools.routes';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(helmet());
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
-}));
+// Manual CORS implementation
+app.use((req, res, next) => {
+  const origin = req.headers.origin as string;
+  
+  console.log('CORS Debug - Origin:', origin, 'NODE_ENV:', process.env.NODE_ENV);
+  
+  // In development, allow all localhost origins
+  if (process.env.NODE_ENV === 'development') {
+    if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      console.log('Setting CORS origin to:', origin);
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+  } else {
+    // In production, use configured URL
+    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  
+  next();
+});
+
+// Other middleware
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
@@ -28,6 +56,7 @@ app.use(morgan('dev'));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/registration', registrationRoutes);
+app.use('/api/schools', schoolsRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {

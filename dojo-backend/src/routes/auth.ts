@@ -126,6 +126,7 @@ router.post('/login', [
       user: {
         id: user.id,
         email: user.email,
+        name: `${user.firstName} ${user.lastName}`,
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
@@ -137,6 +138,39 @@ router.post('/login', [
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// Verify token and get user
+router.get('/verify', authenticate, async (req: any, res: Response) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] },
+      include: [
+        { model: Organization, as: 'organization' }
+      ]
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.json({
+      valid: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: `${user.firstName} ${user.lastName}`,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        organizationId: user.organizationId,
+        schoolId: user.schoolId
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Failed to verify token' });
   }
 });
 

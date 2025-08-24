@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import registrationService from '../services/registration.service';
 import { generateToken } from '../utils/jwt';
 import { authenticate } from '../middleware/auth';
+import { User } from '../models';
 
 const router = Router();
 
@@ -102,7 +103,6 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
     }
 
     // Check if email already exists
-    const { User } = require('../models');
     const existingUser = await User.findOne({ where: { email: req.body.email } });
     if (existingUser) {
       return res.status(409).json({
@@ -176,7 +176,6 @@ router.post('/check-email', [
       });
     }
 
-    const { User } = require('../models');
     const existingUser = await User.findOne({ where: { email: req.body.email } });
     
     res.json({

@@ -14,7 +14,10 @@ interface SchoolAttributes {
   country: string;
   phone: string;
   email: string;
+  website?: string;
+  martialArts?: string[];
   maxStudents?: number;
+  description?: string;
   timezone?: string;
   settings?: object;
   isActive: boolean;
@@ -36,7 +39,10 @@ class School extends Model<SchoolAttributes, SchoolCreationAttributes> implement
   public country!: string;
   public phone!: string;
   public email!: string;
+  public website?: string;
+  public martialArts?: string[];
   public maxStudents?: number;
+  public description?: string;
   public timezone?: string;
   public settings?: object;
   public isActive!: boolean;
@@ -98,7 +104,13 @@ School.init(
         isEmail: true,
       },
     },
+    website: DataTypes.STRING,
+    martialArts: {
+      type: getJSONType(),
+      defaultValue: [],
+    },
     maxStudents: DataTypes.INTEGER,
+    description: DataTypes.TEXT,
     timezone: DataTypes.STRING,
     settings: {
       type: getJSONType(),
